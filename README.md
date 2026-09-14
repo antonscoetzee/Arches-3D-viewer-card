@@ -48,8 +48,9 @@ arches-3dhop-card-extension-framework/
 ```
 
 ---
-## The Arches docs are unclear on this, so I had to hedge my bets on installation:##
+
 ## What Arches `load_package` can install
+### The Arches docs are unclear on this, so I had to hedge my bets on installation:
 
 `python manage.py packages -o load_package` handles:
 
