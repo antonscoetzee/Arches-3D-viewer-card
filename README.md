@@ -1,5 +1,5 @@
 # 3DHOP Model Viewer Card for Arches
-# Anton Coetzee, 2026
+### Anton Coetzee, 2026
 
 An Arches 8.1 card component that embeds a full [3DHOP](https://3dhop.net) viewer
 into any card whose nodegroup contains a file-list node. Supports **NXS**, **NXZ**
@@ -75,7 +75,7 @@ All three gaps are covered by `install.sh`.
 ---
 
 ## Required change to Arches project `urls.py`: Only for testing
-## The web server handles this on a deployed instance.
+### The web server handles this on a deployed instance.
 
 NXS/NXZ files are streamed by `nexus.js` using HTTP `Range` requests
 (byte-range partial content). Django's built-in `FileResponse` returns `200 OK`
