@@ -1,0 +1,167 @@
+{% extends "views/components/cards/default.htm" %}
+{% load i18n %}
+
+{% block form %}
+{{ block.super }}
+
+<div class="panel panel-default" style="margin-bottom: 15px;">
+    <div class="panel-body" style="padding: 0; overflow: hidden;">
+
+        <!-- Status bar — hidden once the model is ready -->
+        <!-- ko if: viewerStatus() !== 'ready' -->
+        <div style="padding: 10px 14px; border-bottom: 1px solid #ddd; background: #f9f9f9;">
+            <strong>{% trans "Status" %}:</strong>
+            <span data-bind="text: viewerStatus"></span>
+            <!-- ko if: viewerMessage() -->
+            <span>&mdash;</span>
+            <span data-bind="text: viewerMessage"></span>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+
+        <!-- File name badge when a model is loaded -->
+        <!-- ko if: modelFile() && viewerStatus() === 'ready' -->
+        <div style="padding: 6px 14px; font-size: 12px; color: #555; border-bottom: 1px solid #eee; background: #f5f5f5;">
+            <strong>{% trans "File" %}:</strong>
+            <span data-bind="text: modelFile().name"></span>
+        </div>
+        <!-- /ko -->
+
+        <!-- 3DHOP render target with overlay toolbar -->
+        <div style="position: relative;">
+            <div data-bind="attr: { id: viewerContainerId }"
+                 style="width: 100%; height: calc(100vh - 220px); min-height: 400px; background: #1e1e2e; display: block;"></div>
+
+            <!-- ko if: viewerStatus() === 'ready' -->
+            <div style="position: absolute; top: 8px; right: 8px; display: flex; flex-direction: column; gap: 4px; z-index: 10;">
+                <!-- Reset view -->
+                <button type="button" title="{% trans 'Reset view' %}" data-bind="click: resetView"
+                    style="width:34px;height:34px;border:none;border-radius:4px;background:rgba(30,30,46,0.85);color:#fff;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;">
+                    &#8962;
+                </button>
+                <!-- Zoom in -->
+                <button type="button" title="{% trans 'Zoom in' %}" data-bind="click: zoomIn"
+                    style="width:34px;height:34px;border:none;border-radius:4px;background:rgba(30,30,46,0.85);color:#fff;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;">
+                    +
+                </button>
+                <!-- Zoom out -->
+                <button type="button" title="{% trans 'Zoom out' %}" data-bind="click: zoomOut"
+                    style="width:34px;height:34px;border:none;border-radius:4px;background:rgba(30,30,46,0.85);color:#fff;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;">
+                    &minus;
+                </button>
+                <!-- Light trackball toggle -->
+                <button type="button" title="{% trans 'Toggle light' %}"
+                    style="width:34px;height:34px;border:none;border-radius:4px;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;"
+                    data-bind="click: toggleLight, style: { background: isLightOn() ? 'rgba(255,220,80,0.9)' : 'rgba(30,30,46,0.85)', color: isLightOn() ? '#333' : '#fff' }">
+                    &#9788;
+                </button>
+                <!-- Texture toggle -->
+                <button type="button" title="{% trans 'Toggle texture' %}"
+                    style="width:34px;height:34px;border:none;border-radius:4px;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;"
+                    data-bind="click: toggleTexture, style: { background: isTextureOn() ? 'rgba(110,160,255,0.9)' : 'rgba(30,30,46,0.85)', color: '#fff' }">
+                    T
+                </button>
+                <!-- Measure tool -->
+                <button type="button" title="{% trans 'Measure distance' %}"
+                    style="width:34px;height:34px;border:none;border-radius:4px;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;"
+                    data-bind="click: toggleMeasure, style: { background: isMeasuring() ? 'rgba(80,200,120,0.9)' : 'rgba(30,30,46,0.85)', color: isMeasuring() ? '#fff' : '#fff' }">
+                    &#8596;
+                </button>
+                <!-- Fullscreen -->
+                <button type="button" title="{% trans 'Fullscreen' %}" data-bind="click: toggleFullscreen"
+                    style="width:34px;height:34px;border:none;border-radius:4px;background:rgba(30,30,46,0.85);color:#fff;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;">
+                    <!-- ko if: !isFullscreen() -->&#x26F6;<!-- /ko -->
+                    <!-- ko if: isFullscreen() -->&#x2715;<!-- /ko -->
+                </button>
+            </div>
+            <!-- /ko -->
+
+            <!-- Measurement result popup -->
+            <!-- ko if: measurementResult() -->
+            <div style="position: absolute; bottom: 12px; left: 12px; z-index: 10; background: rgba(30,30,46,0.9); color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-family: monospace; display: flex; align-items: center; gap: 10px;">
+                <span>&#8596; <strong data-bind="text: measurementResult"></strong> {% trans 'units' %}</span>
+                <button type="button" title="{% trans 'Clear' %}" data-bind="click: function(){ measurementResult(null); }"
+                    style="background: none; border: none; color: #aaa; cursor: pointer; font-size: 14px; padding: 0; line-height: 1;">&#x2715;</button>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
+</div>
+{% endblock form %}
+
+{% block report %}
+<div class="panel panel-default" style="margin-bottom: 15px;">
+    <div class="panel-body" style="padding: 0; overflow: hidden;">
+
+        <!-- ko if: viewerStatus() !== 'ready' -->
+        <div style="padding: 10px 14px; border-bottom: 1px solid #ddd; background: #f9f9f9;">
+            <strong>{% trans "Status" %}:</strong>
+            <span data-bind="text: viewerStatus"></span>
+            <!-- ko if: viewerMessage() -->
+            <span>&mdash;</span>
+            <span data-bind="text: viewerMessage"></span>
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+
+        <!-- ko if: modelFile() && viewerStatus() === 'ready' -->
+        <div style="padding: 6px 14px; font-size: 12px; color: #555; border-bottom: 1px solid #eee; background: #f5f5f5;">
+            <strong>{% trans "File" %}:</strong>
+            <span data-bind="text: modelFile().name"></span>
+        </div>
+        <!-- /ko -->
+
+        <div style="position: relative;">
+            <div data-bind="attr: { id: viewerContainerId }"
+                 style="width: 100%; height: calc(100vh - 220px); min-height: 400px; background: #1e1e2e; display: block;"></div>
+
+            <!-- ko if: viewerStatus() === 'ready' -->
+            <div style="position: absolute; top: 8px; right: 8px; display: flex; flex-direction: column; gap: 4px; z-index: 10;">
+                <button type="button" title="{% trans 'Reset view' %}" data-bind="click: resetView"
+                    style="width:34px;height:34px;border:none;border-radius:4px;background:rgba(30,30,46,0.85);color:#fff;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;">
+                    &#8962;
+                </button>
+                <button type="button" title="{% trans 'Zoom in' %}" data-bind="click: zoomIn"
+                    style="width:34px;height:34px;border:none;border-radius:4px;background:rgba(30,30,46,0.85);color:#fff;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;">
+                    +
+                </button>
+                <button type="button" title="{% trans 'Zoom out' %}" data-bind="click: zoomOut"
+                    style="width:34px;height:34px;border:none;border-radius:4px;background:rgba(30,30,46,0.85);color:#fff;cursor:pointer;font-size:20px;line-height:1;display:flex;align-items:center;justify-content:center;">
+                    &minus;
+                </button>
+                <button type="button" title="{% trans 'Toggle light' %}"
+                    style="width:34px;height:34px;border:none;border-radius:4px;cursor:pointer;font-size:16px;line-height:1;display:flex;align-items:center;justify-content:center;"
+                    data-bind="click: toggleLight, style: { background: isLightOn() ? 'rgba(255,220,80,0.9)' : 'rgba(30,30,46,0.85)', color: isLightOn() ? '#333' : '#fff' }">
+                    &#9788;
+                </button>
+                <button type="button" title="{% trans 'Toggle texture' %}"
+                    style="width:34px;height:34px;border:none;border-radius:4px;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;"
+                    data-bind="click: toggleTexture, style: { background: isTextureOn() ? 'rgba(110,160,255,0.9)' : 'rgba(30,30,46,0.85)', color: '#fff' }">
+                    T
+                </button>
+                <!-- Measure tool -->
+                <button type="button" title="{% trans 'Measure distance' %}"
+                    style="width:34px;height:34px;border:none;border-radius:4px;cursor:pointer;font-size:15px;line-height:1;display:flex;align-items:center;justify-content:center;"
+                    data-bind="click: toggleMeasure, style: { background: isMeasuring() ? 'rgba(80,200,120,0.9)' : 'rgba(30,30,46,0.85)', color: '#fff' }">
+                    &#8596;
+                </button>
+                <button type="button" title="{% trans 'Fullscreen' %}" data-bind="click: toggleFullscreen"
+                    style="width:34px;height:34px;border:none;border-radius:4px;background:rgba(30,30,46,0.85);color:#fff;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;">
+                    <!-- ko if: !isFullscreen() -->&#x26F6;<!-- /ko -->
+                    <!-- ko if: isFullscreen() -->&#x2715;<!-- /ko -->
+                </button>
+            </div>
+            <!-- /ko -->
+
+            <!-- Measurement result popup -->
+            <!-- ko if: measurementResult() -->
+            <div style="position: absolute; bottom: 12px; left: 12px; z-index: 10; background: rgba(30,30,46,0.9); color: #fff; padding: 8px 14px; border-radius: 6px; font-size: 13px; font-family: monospace; display: flex; align-items: center; gap: 10px;">
+                <span>&#8596; <strong data-bind="text: measurementResult"></strong> {% trans 'units' %}</span>
+                <button type="button" title="{% trans 'Clear' %}" data-bind="click: function(){ measurementResult(null); }"
+                    style="background: none; border: none; color: #aaa; cursor: pointer; font-size: 14px; padding: 0; line-height: 1;">&#x2715;</button>
+            </div>
+            <!-- /ko -->
+        </div>
+    </div>
+</div>
+{% endblock report %}

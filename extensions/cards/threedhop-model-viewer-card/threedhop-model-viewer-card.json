@@ -1,0 +1,11 @@
+{
+    "componentid": "f1a590e7-708d-476d-a6e2-f4044f34c337",
+    "name": "3DHOP Model Viewer Card",
+    "description": "Card for displaying 3D model files using an embedded 3DHOP presenter.",
+    "component": "views/components/cards/threedhop-model-viewer-card",
+    "componentname": "threedhop-model-viewer-card",
+    "defaultconfig": {
+        "extensionVersion": "0.1.0",
+        "viewerEmptyMessage": "No model file available. Add a supported 3DHOP file to the file-list widget for this node."
+    }
+}
