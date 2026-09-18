@@ -6,19 +6,12 @@ into any card whose nodegroup contains a file-list node. Supports **NXS**, **NXZ
 (Nexus compressed). This has only been tested on Arches 8.1.1. I will test it on the newer
 versions shortly.
 
----
-
-## Features
-
+### Things that are working for now:
 - Automatic model loading from the card's file-list node
 - Viewport-filling canvas that resizes with the window
 - Overlay toolbar: reset view, zoom in/out, light trackball, measure, fullscreen
 - Distance measurement with on-canvas result popup
-- All 3DHOP runtime scripts are vendored (no CDN dependency)
-
----
-
-## Repository layout
+- All 3DHOP runtime scripts are vendored (no CDN dependency); not sure this is needed, but seemed like a good idea at the time.
 
 ```
 arches-3dhop-card-extension-framework/
@@ -103,6 +96,8 @@ urlpatterns.append(
 ```
 
 The `ranged_media_serve` function is defined at the top of the patched file.
+### Note that is only needed for local Django dev server. On deployment, the webserver (Django or Nginx) will handle this.
+
 
 ---
 
